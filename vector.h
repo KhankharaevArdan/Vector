@@ -3,19 +3,48 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct vector
+typedef struct Node
 {
-    int* head_;
-    int size_;
-};
+    size_t num;
+    void* data;
+} Node;
 
-struct vector* vector_create (int size);
-int vector_size (struct vector *vector);
-void vector_init (struct vector *vector);
-void add_to_tail (struct vector *vector);
-void remove_from_tail (struct vector *vector);
-int find_elem (struct vector* vector, int number);
-void vector_print (const struct vector *vector);
-void vector_destroy (struct vector* vector);
+typedef struct Vector
+{
+    Node* first;
+    size_t size;
+} Vector;
+
+typedef struct Container
+{
+	Vector vector;
+} Container;
+
+typedef struct methods
+{
+	void (*init)(void*, void*, size_t, size_t);
+	void (*delete)(void*);
+
+	void (*pushFront)(void*, void*);
+	void* (*popFront)(void*);
+	void (*pushBack)(void*, void*);
+	void* (*popBack)(void*);
+	void (*push)(void*, size_t, void*);
+	void* (*pop)(void*, size_t);
+	Node* (*getNode)(void*, size_t);
+	void (*print)(void*, void (*printElem)(void*));
+} methods;
+
+Vector* vector_create(methods* m);
+void vector_pushFront(Vector* vector, void* data);
+void* vector_popFront(Vector* vector);
+void vector_pushBack(Vector* vector, void* data);
+void* vector_popBack(Vector* vector);
+void vector_push(Vector* vector, size_t index, void* data);
+void* vector_pop(Vector* vector, size_t index);
+Node* vector_getNode(Vector* vector, size_t index);
+void vector_init(Vector* vector, void* arr, size_t n, size_t size);
+void vector_delete(Vector* vector);
+void vector_print(Vector* vector, void (*printElem)(void*));
 
 #endif
