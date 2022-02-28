@@ -5,17 +5,17 @@
 
 typedef struct methods
 {
-	void (*init)(void*, void*, size_t, size_t);
-	void (*delete)(void*);
+    void (*init)(void*, void*, size_t, size_t);
+    void (*delete)(void*);
 
-	void (*pushBack)(void*, void*);
-	void* (*popBack)(void*);
-	void (*print)(void*, void (*printElem)(void*));
+    void (*pushBack)(void*, void*);
+    void* (*popBack)(void*);
+    void (*print)(void*, void (*printElem)(void*));
 } methods;
 
 typedef struct Container
 {
-	methods* m;
+    methods* m;
 } Container;
 
 Container* vector_create();
