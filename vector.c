@@ -39,7 +39,6 @@ Container* vector_create()
     container->m->init = vector_init;
     container->m->delete = vector_delete;
     container->m->print = vector_print;
-
     return container;
 }
 

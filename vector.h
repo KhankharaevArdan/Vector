@@ -7,7 +7,6 @@ typedef struct methods
 {
     void (*init)(void*, void*, size_t, size_t);
     void (*delete)(void*);
-
     void (*pushBack)(void*, void*);
     void* (*popBack)(void*);
     void (*print)(void*, void (*printElem)(void*));
@@ -27,6 +26,5 @@ void* List_popFront(Container* container);
 void List_push(Container* container, size_t index, void* data);
 void* List_pop(Container* container, size_t index);
 //Node* List_getNode(Container* container, size_t index);
-
 
 #endif
