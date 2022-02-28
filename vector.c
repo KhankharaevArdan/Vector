@@ -1,62 +1,51 @@
 #include "Vector.h"
 
-Vector* vector_create(methods* m)
+typedef struct Node
 {
-	Vector* vector = (Vector*)malloc(sizeof(Vector));
-	vector->size = 0;
-	vector->first = NULL;
+    size_t num;
+    void* data;
+} Node;
 
-	m->pushFront = vector_pushFront;
-	m->popFront = vector_popFront;
-	m->pushBack = vector_pushBack;
-	m->popBack = vector_popBack;
-	m->push = vector_push;
-	m->pop = vector_pop;
-	m->getNode = vector_getNode;
-    m->init = vector_init;
-	m->delete = vector_delete;
-	m->print = vector_print;
 
-	return vector;
+typedef struct Vector
+{
+    Node* first;
+    size_t size;
+} Vector;
+
+void vector_pushBack(Container* container, void* data);
+void* vector_popBack(Container* container);
+void* vector_getNode(Container* container, size_t index);
+void vector_init(Container* container, void* arr, size_t n, size_t size);
+void vector_delete(Container* container);
+void vector_print(Container* container, void (*printElem)(void*));
+
+Container* vector_create()
+{
+	Container* container = malloc(sizeof(Container) + sizeof(Vector));
+    if (container == NULL) 
+		exit(1);
+    container->m = malloc(sizeof(methods));
+    if (container->m == NULL) {
+		free(container);
+		exit(2);
+	}
+	Vector* vector = (Vector*)(container + 1);
+    vector->first = NULL;
+    vector->size = 0;
+
+	container->m->pushBack = vector_pushBack;
+	container->m->popBack = vector_popBack;
+    container->m->init = vector_init;
+	container->m->delete = vector_delete;
+	container->m->print = vector_print;
+
+	return container;
 }
 
-void vector_pushFront(Vector* vector, void* data)
+void vector_pushBack(Container* container, void* data)
 {
-	size_t size = vector->size + 1;
-    Node* tmp = (Node*)malloc(size * sizeof(Node));
-    Node* elem = (Node*)malloc(sizeof(Node));
-	tmp[0].data = data;
-    tmp[0].num = 0;
-	for (size_t i = 1; i < size; i++) 
-    {
-		elem = vector->first + (i - 1) * sizeof(Node*);
-        tmp[i].data = elem->data;
-        tmp[i].num = i;
-    }
-    vector->size = size;
-    vector->first = tmp;
-}
-
-void* vector_popFront(Vector* vector)
-{
-    Node* elem = (Node*)malloc(sizeof(Node));
-    Node* tmp_elem = (Node*)malloc((vector->size - 1) * sizeof(Node));
-    void* tmp;
-    elem = vector->first;
-    tmp = elem->data;
-    for (size_t i = 1; i < vector->size; i++) 
-    {
-		elem = vector->first + (i) * sizeof(Node*);
-        tmp_elem[i - 1].data = elem->data;
-        tmp_elem[i - 1].num = i - 1;
-    }
-    --vector->size;
-    vector->first = tmp_elem;
-    return tmp;
-}
-
-void vector_pushBack(Vector* vector, void* data)
-{
+    Vector* vector = (Vector*)(container + 1);
     ++(vector->size);
     Node* elem = (Node*)malloc(sizeof(Node));
     if (vector->first == NULL)
@@ -73,8 +62,9 @@ void vector_pushBack(Vector* vector, void* data)
     }
 }
 
-void* vector_popBack(Vector* vector)
+void* vector_popBack(Container* container)
 {
+    Vector* vector = (Vector*)(container + 1);
     Node* elem = (Node*)malloc(sizeof(Node));
     void* tmp;
     elem = vector->first + (vector->size - 1) * sizeof(Node*);
@@ -84,77 +74,58 @@ void* vector_popBack(Vector* vector)
     return tmp;
 }
 
-void vector_push(Vector* vector, size_t index, void* data)
+void vector_setValue(Container* container, size_t index, void* data)
 {
-    size_t size = vector->size + 1;
-	Node* elem = (Node*)malloc(size * sizeof(Node));
-	vector->size = size;
-    for (size_t i = 0; i < size; i++)
-		elem[i].num = i;
-	for (size_t i = 0; i < index; i++) 
-		elem[i].data = vector->first[i].data;
-	elem[index].data = data;
-	for (size_t i = index; i < size; i++) 
-		elem[i].data = vector->first[i - 1].data;
-	free(vector->first);
-	vector->first = elem;
+    Vector* vector = (Vector*)(container + 1);
+    if (index >= vector->size)
+		exit(3);
+	Node* elem = vector->first + sizeof(Node*) * index;
+	elem->data = data;
+    elem->num = index;
 }
 
-Node* vector_getNode(Vector* vector, size_t index)
+void* vector_getValue(Container* container, size_t index)
 {
-	return vector->first + (index) * sizeof(Node*);
+    Vector* vector = (Vector*)(container + 1);
+    Node* elem = vector->first + sizeof(Node*) * index;
+	return elem->data;
 }
 
-void* vector_pop(Vector* vector, size_t index)
+void vector_init(Container* container, void* arr, size_t n, size_t size)
 {
-    Node* elem = (Node*)malloc(sizeof(Node));
-    void* tmp;
-    elem = vector_getNode(vector, index);
-    tmp = elem->data;
-    for (size_t i = index; i < vector->size; i++) 
-	    vector->first[i].data = vector->first[i + 1].data;
-    --vector->size;
-    return tmp;
-}
-
-void vector_init(Vector* vector, void* arr, size_t n, size_t size)
-{
+    Vector* vector = (Vector*)(container + 1);
     size_t i = 0;
 	if (arr == NULL)
-		exit(6);
+		exit(4);
 	if (vector == NULL)
-		exit(7);
+		exit(5);
 	while (i < n)
 	{   
-		vector_pushBack(vector, (char*)arr + i * size);
+		vector_pushBack(container, (char*)arr + i * size);
 		i++;
 	}
 }
 
-void vector_delete(Vector* vector)
+void vector_delete(Container* container)
 {
-    Node* elem = (Node*)malloc(sizeof(Node));
-    int i = 0;
-	while (elem)
-	{
-        elem = vector_getNode(vector, i);
-        printf ("%ld) ", elem->num);
-        free(elem);
-        ++i;
-	}
-	free(vector);
+    Vector* vector = (Vector*)(container + 1);
+    free(vector->first);
+    vector->first = NULL;
+	free(container);
 	vector = NULL;
 }
 
-void vector_print(Vector* vector, void (*printElem)(void*))
+void vector_print(Container* container, void (*printElem)(void*))
 {
-    Node* elem = (Node*)malloc(sizeof(Node));
+    Vector* vector = (Vector*)(container + 1);
     size_t i = 0;
-	while ((elem) && (i < vector->size))
+    void* data = vector_getValue(container, i);
+    printElem(data);
+	while ((data) && (i + 1 < vector->size))
 	{
-        elem = vector_getNode(vector, i);
-		printElem(elem->data);
         ++i;
+        data = vector_getValue(container, i);
+		printElem(data);
 	}
 	printf("\n");
 }

@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wextra -O2
+CFLAGS = -O2
 
 all: test
 
