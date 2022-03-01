@@ -1,5 +1,5 @@
-#ifndef CONTAINER_H
-#define CONTAINER_H
+#ifndef VECTOR
+#define VECTOR
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,7 +21,10 @@ typedef struct Container
     methods* m;
 } Container;
 
-Container* List_create();
 Container* vector_create();
+Container* List_create();
+void vector_setValue(Container* container, size_t index, void* data);
+void* vector_getValue(Container* container, size_t index);
 
-#endif // CONTAINER_H
+
+#endif

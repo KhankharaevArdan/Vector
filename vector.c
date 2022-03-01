@@ -15,11 +15,10 @@ typedef struct Vector
 
 void vector_pushBack(Container* container, void* data);
 void* vector_popBack(Container* container);
-void* vector_getNode(Container* container, size_t index);
 void vector_init(Container* container, void* arr, size_t n, size_t size);
 void vector_delete(Container* container);
 void vector_print(Container* container, void (*printElem)(void*));
-void vector_bubbleSort(Container* cont, bool (*compType)(void*, void*));
+void vector_bubbleSort(Container* container, bool (*compType)(void*, void*));
 
 Container* vector_create()
 {
@@ -151,3 +150,4 @@ void vector_bubbleSort(Container* container, bool (*compType)(void*, void*))
         }
     }
 }
+
