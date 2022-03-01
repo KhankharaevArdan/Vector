@@ -1,4 +1,4 @@
-#include "Vector.h"
+#include "container.h"
 
 typedef struct Node
 {
@@ -19,6 +19,7 @@ void* vector_getNode(Container* container, size_t index);
 void vector_init(Container* container, void* arr, size_t n, size_t size);
 void vector_delete(Container* container);
 void vector_print(Container* container, void (*printElem)(void*));
+void vector_bubbleSort(Container* cont, bool (*compType)(void*, void*));
 
 Container* vector_create()
 {
@@ -39,6 +40,7 @@ Container* vector_create()
     container->m->init = vector_init;
     container->m->delete = vector_delete;
     container->m->print = vector_print;
+    container->m->bubbleSort = vector_bubbleSort;
     return container;
 }
 
@@ -129,5 +131,23 @@ void vector_print(Container* container, void (*printElem)(void*))
     printf("\n");
 }
 
-
-
+void vector_bubbleSort(Container* container, bool (*compType)(void*, void*))
+{
+    Vector* vector = (Vector*)(container + 1);
+    int i = 0, j = 0;
+    Node* this; Node* another;
+    for (i = 0; i < vector->size - 1; i++)
+    {
+        for (j = 0; j < vector->size - i - 1; j++)
+        {
+            this = vector->first + sizeof(Node*) * j;
+            another = vector->first + sizeof(Node*) * (j + 1);
+            if (compType(this->data, another->data))
+            {
+                void* tmp = this->data;
+                this->data = another->data;
+                another->data = tmp;
+            }
+        }
+    }
+}
